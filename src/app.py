@@ -17,6 +17,9 @@ from session_manager import SessionManager
 from visualizer import DataFlowVisualizer
 from policy_generator import PolicyGenerator
 
+# Update import statement at the top of app.py
+from session_manager import SessionManager
+
 # Initialize the app
 st.set_page_config(
     page_title="Data Flow Assessment Tool",
@@ -25,8 +28,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Initialize session manager
-session_manager = SessionManager(use_local_storage=False)
+# Initialize session manager (no data_dir parameter needed)
+session_manager = SessionManager()
 
 
 def format_question_text(text, item=None):
@@ -381,67 +384,52 @@ def render_sidebar():
         "Session Options:",
         [
             "Continue Current Session",
-            "Download Session",
-            "Upload Session",
+            "Export Session",
+            "Import Session",
             "Start New Session",
         ],
     )
 
-    if session_action == "Download Session":
-        if not st.session_state.answers:
-            st.sidebar.warning(
-                "No data to download. Please answer some questions first."
-            )
-        else:
-            # Generate file name
-            system_name = st.session_state.answers.get("system_name", "")
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-            if system_name:
-                safe_name = "".join(c if c.isalnum() else "_" for c in system_name)
-                file_name = f"{safe_name}_{timestamp}.json"
-            else:
-                file_name = f"data_flow_session_{timestamp}.json"
-
-            # Create download button
-            json_data = session_manager.export_session()
-            st.sidebar.download_button(
-                label="Download Session File",
-                data=json_data,
-                file_name=file_name,
-                mime="application/json",
-                help="Download your session as a file to continue on another device or share with others",
-            )
-
-            st.sidebar.info(
-                "You can upload this file later to continue your assessment."
-            )
-
-    elif session_action == "Upload Session":
-        st.sidebar.info(
-            "Upload a previously downloaded session file to continue your assessment."
+    if session_action == "Export Session":
+        # Allow custom naming
+        session_name = st.sidebar.text_input(
+            "Session name (optional):", help="Leave blank for auto-generated name"
         )
 
+        # Generate the export data
+        file_name, file_content = session_manager.export_session(
+            session_name if session_name else None
+        )
+
+        # Create download button
+        st.sidebar.download_button(
+            label="Download Session File",
+            data=file_content,
+            file_name=file_name,
+            mime="application/json",
+            help="Download your session to continue later",
+        )
+
+    elif session_action == "Import Session":
+        # First-stage: File uploader
         uploaded_file = st.sidebar.file_uploader(
-            "Choose a session file to upload:",
+            "Upload a saved session file:",
             type=["json"],
-            help="Upload a JSON session file that was previously downloaded",
+            help="Upload a previously exported session file",
+            key="session_uploader",
         )
 
+        # Second-stage: Only process when button is clicked
         if uploaded_file is not None:
-            # Process the file
-            try:
-                json_str = uploaded_file.getvalue().decode("utf-8")
-                if session_manager.import_session(json_str):
-                    st.sidebar.success("Session successfully loaded from file!")
-                    # Force refresh
+            if st.sidebar.button("Import Session", key="confirm_import"):
+                if session_manager.import_session(uploaded_file):
+                    st.sidebar.success("Session imported successfully!")
+                    # Force refresh to apply the imported session
                     st.rerun()
-            except Exception as e:
-                st.sidebar.error(f"Error processing file: {str(e)}")
 
     elif session_action == "Start New Session":
         if st.sidebar.button("Confirm New Session"):
-            # Reset session state without saving
+            # Reset session state
             session_manager.reset_session()
             st.sidebar.success("New session started!")
             # Force refresh
