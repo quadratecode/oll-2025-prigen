@@ -26,8 +26,6 @@ class SessionManager:
             st.session_state.current_question_index = 0
         if "completed" not in st.session_state:
             st.session_state.completed = False
-        if "upload_requested" not in st.session_state:
-            st.session_state.upload_requested = False
 
     def export_session(self, name=None):
         """
@@ -41,7 +39,15 @@ class SessionManager:
         """
         # Generate a name based on system name if available, otherwise use timestamp
         if name is None:
-            system_name = st.session_state.answers.get("system_name", "")
+            system_name = ""
+            if (
+                "systems" in st.session_state.answers
+                and st.session_state.answers["systems"]
+            ):
+                system_name = st.session_state.answers["systems"][
+                    0
+                ]  # Use the first system name
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
             if system_name:
@@ -49,21 +55,28 @@ class SessionManager:
                 safe_name = "".join(c if c.isalnum() else "_" for c in system_name)
                 name = f"{safe_name}_{timestamp}.json"
             else:
-                name = f"session_{timestamp}.json"
+                name = f"datenfluss_{timestamp}.json"
 
         # Ensure file has .json extension
         if not name.endswith(".json"):
             name = f"{name}.json"
 
+        # Clean session state of temporary input keys
+        cleaned_answers = {}
+        for key, value in st.session_state.answers.items():
+            # Skip temporary input keys
+            if not key.startswith("new_item_") and not key.startswith("new_processor_"):
+                cleaned_answers[key] = value
+
         data = {
-            "answers": st.session_state.answers,
+            "answers": cleaned_answers,
             "current_question_index": st.session_state.current_question_index,
             "completed": st.session_state.completed,
             "timestamp": datetime.now().isoformat(),
         }
 
         # Convert to JSON string
-        json_content = json.dumps(data, indent=2)
+        json_content = json.dumps(data, indent=2, ensure_ascii=False)
 
         return name, json_content
 
@@ -91,11 +104,16 @@ class SessionManager:
 
             return True
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
-            st.error(f"Error importing session: {str(e)}")
+            st.error(f"Fehler beim Importieren der Sitzung: {str(e)}")
             return False
 
     def reset_session(self):
         """Reset the current session state to start from scratch"""
-        st.session_state.answers = {}
-        st.session_state.current_question_index = 0
-        st.session_state.completed = False
+        # Clear all session state variables
+        for key in list(st.session_state.keys()):
+            # Keep only internal Streamlit session variables
+            if not key.startswith("_"):
+                del st.session_state[key]
+
+        # Reinitialize session state
+        self._initialize_session_state()
