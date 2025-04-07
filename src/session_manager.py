@@ -6,6 +6,7 @@ Handles exporting and importing user sessions via client-side storage.
 import json
 import streamlit as st
 from datetime import datetime
+from translations import get_text, get_formatted_text
 
 
 class SessionManager:
@@ -26,6 +27,8 @@ class SessionManager:
             st.session_state.current_question_index = 0
         if "completed" not in st.session_state:
             st.session_state.completed = False
+        if "language" not in st.session_state:
+            st.session_state.language = "de"  # Default language
 
     def export_session(self, name=None):
         """
@@ -72,6 +75,7 @@ class SessionManager:
             "answers": cleaned_answers,
             "current_question_index": st.session_state.current_question_index,
             "completed": st.session_state.completed,
+            "language": st.session_state.language,  # Save the current language setting
             "timestamp": datetime.now().isoformat(),
         }
 
@@ -102,13 +106,21 @@ class SessionManager:
             )
             st.session_state.completed = data.get("completed", False)
 
+            # Import language setting if available
+            if "language" in data:
+                st.session_state.language = data["language"]
+
             return True
         except (json.JSONDecodeError, UnicodeDecodeError) as e:
-            st.error(f"Fehler beim Importieren der Sitzung: {str(e)}")
+            language = st.session_state.get("language", "de")
+            st.error(get_formatted_text("import_error", language, error=str(e)))
             return False
 
     def reset_session(self):
         """Reset the current session state to start from scratch"""
+        # Save the current language setting
+        current_language = st.session_state.get("language", "de")
+
         # Clear all session state variables
         for key in list(st.session_state.keys()):
             # Keep only internal Streamlit session variables
@@ -117,3 +129,6 @@ class SessionManager:
 
         # Reinitialize session state
         self._initialize_session_state()
+
+        # Restore the language setting
+        st.session_state.language = current_language

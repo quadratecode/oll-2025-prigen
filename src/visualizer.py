@@ -6,6 +6,7 @@ Placeholder for future implementation of data flow diagrams.
 import streamlit as st
 from pathlib import Path
 import os
+from translations import get_text
 
 
 class DataFlowVisualizer:
@@ -33,6 +34,8 @@ class DataFlowVisualizer:
         Returns:
             str: d2lang script content
         """
+        language = st.session_state.get("language", "de")
+
         # Extract relevant data
         systems = answers.get("systems", [])
 
@@ -58,13 +61,14 @@ class DataFlowVisualizer:
                 if party not in responsible_parties:
                     responsible_parties.append(party)
 
+        # Labels based on language
+        processor_label = get_text("processor", language)
+
         d2_script += "\n# Responsible Parties and Processors\n"
         for party in responsible_parties:
             processors = answers.get(f"processors_{party}", [])
             processors_str = ", ".join(processors)
-            d2_script += (
-                f"{party}: {party}\\n(Processors: {processors_str}) {{shape: oval}}\n"
-            )
+            d2_script += f"{party}: {party}\\n({processor_label}s: {processors_str}) {{shape: oval}}\n"
 
         # Add data types
         data_types = answers.get("data_types", [])
@@ -105,8 +109,10 @@ class DataFlowVisualizer:
         Returns:
             str: Message indicating this is a placeholder
         """
+        language = st.session_state.get("language", "de")
+
         # Display a message that this is a placeholder
-        st.info("Dies ist ein Platzhalter für die Visualisierungsfunktion.")
+        st.info(get_text("visualization_placeholder", language))
 
         # Show a preview of what the d2 script would look like
         d2_script = self.generate_d2_script(answers)

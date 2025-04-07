@@ -22,14 +22,12 @@ from questions import (
 from session_manager import SessionManager
 from visualizer import DataFlowVisualizer
 from policy_generator import PolicyGenerator
-from translations import get_text
+from translations import get_text, get_formatted_text, AVAILABLE_LANGUAGES
 
-# Set default language
-LANGUAGE = "de"  # Can be changed to "en" for English
 
 # Initialize the app
 st.set_page_config(
-    page_title=get_text("app_title", LANGUAGE),
+    page_title="Data Flow Assessment Tool",
     page_icon="🔄",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -93,6 +91,8 @@ def render_question(question, item=None):
     Returns:
         bool: True if the question has been answered, False otherwise
     """
+    language = st.session_state.get("language", "de")
+
     # Handle special question types
     if question["type"] == "special":
         if question.get("special_type") == "responsible_processors":
@@ -124,9 +124,9 @@ def render_question(question, item=None):
             # Create a form for adding new items to avoid widget key conflicts
             with st.form(key=f"add_item_form_{question_id}"):
                 new_item = st.text_input(
-                    "Neuen Eintrag hinzufügen:", key=f"input_{question_id}"
+                    get_text("add_new_item", language), key=f"input_{question_id}"
                 )
-                submitted = st.form_submit_button("Hinzufügen")
+                submitted = st.form_submit_button(get_text("add_button", language))
                 if submitted and new_item.strip():
                     if question_id not in st.session_state.answers:
                         st.session_state.answers[question_id] = []
@@ -135,7 +135,7 @@ def render_question(question, item=None):
 
             # Display the current list of items with delete buttons
             if st.session_state.answers.get(question_id, []):
-                st.write("Aktuelle Einträge:")
+                st.write(get_text("current_entries", language))
                 for i, item_value in enumerate(st.session_state.answers[question_id]):
                     col1, col2 = st.columns([5, 1])
                     with col1:
@@ -150,7 +150,7 @@ def render_question(question, item=None):
 
             if question.get("multiline", False):
                 user_input = st.text_area(
-                    get_text("your_answer", LANGUAGE),
+                    get_text("your_answer", language),
                     value=default_value,
                     key=f"input_{question_id}",
                     height=150,
@@ -158,7 +158,7 @@ def render_question(question, item=None):
                 )
             else:
                 user_input = st.text_input(
-                    get_text("your_answer", LANGUAGE),
+                    get_text("your_answer", language),
                     value=default_value,
                     key=f"input_{question_id}",
                     label_visibility="collapsed",
@@ -178,7 +178,7 @@ def render_question(question, item=None):
                 default_idx = 0
 
         selected = st.radio(
-            get_text("select_one", LANGUAGE),
+            get_text("select_one", language),
             options,
             index=default_idx,
             key=f"radio_{question_id}",
@@ -206,7 +206,7 @@ def render_question(question, item=None):
                 )
 
         selected = st.multiselect(
-            get_text("select_all", LANGUAGE),
+            get_text("select_all", language),
             options,
             default=default,
             key=f"multiselect_{question_id}",
@@ -219,7 +219,7 @@ def render_question(question, item=None):
     elif question["type"] == "number":
         default_value = st.session_state.answers.get(question_id, 0)
         user_input = st.number_input(
-            get_text("your_answer", LANGUAGE),
+            get_text("your_answer", language),
             value=(
                 float(default_value) if isinstance(default_value, (int, float)) else 0
             ),
@@ -255,6 +255,8 @@ def render_responsible_processors_question(question):
     Returns:
         bool: True if all required sub-questions are answered, False otherwise
     """
+    language = st.session_state.get("language", "de")
+
     st.markdown(f"**{question['text']}**")
     if "help" in question:
         st.caption(question["help"])
@@ -263,7 +265,7 @@ def render_responsible_processors_question(question):
     responsible_parties = collect_all_responsible_parties(st.session_state.answers)
 
     if not responsible_parties:
-        st.info("Bitte beantworten Sie zuerst die Fragen zu den Verantwortlichen.")
+        st.info(get_text("responsible_parties_first", language))
         return False
 
     all_answered = True
@@ -273,7 +275,9 @@ def render_responsible_processors_question(question):
 
     for i, party in enumerate(responsible_parties):
         with tabs[i]:
-            st.markdown(f"### Bearbeiter für {party}")
+            st.markdown(
+                f"### {get_formatted_text('processor_for', language, party=party)}"
+            )
 
             question_id = f"processors_{party}"
 
@@ -284,9 +288,9 @@ def render_responsible_processors_question(question):
             # Create a form for adding new processors
             with st.form(key=f"add_processor_form_{question_id}"):
                 new_processor = st.text_input(
-                    "Neuen Bearbeiter hinzufügen:", key=f"input_{question_id}"
+                    get_text("add_new_processor", language), key=f"input_{question_id}"
                 )
-                submitted = st.form_submit_button("Hinzufügen")
+                submitted = st.form_submit_button(get_text("add_button", language))
                 if submitted and new_processor.strip():
                     if question_id not in st.session_state.answers:
                         st.session_state.answers[question_id] = []
@@ -295,7 +299,7 @@ def render_responsible_processors_question(question):
 
             # Display the current list of processors with delete buttons
             if st.session_state.answers.get(question_id, []):
-                st.write("Aktuelle Bearbeiter:")
+                st.write(get_text("current_processors", language))
                 for j, processor in enumerate(st.session_state.answers[question_id]):
                     col1, col2 = st.columns([5, 1])
                     with col1:
@@ -308,7 +312,7 @@ def render_responsible_processors_question(question):
             # Check if this party has at least one processor
             is_answered = len(st.session_state.answers.get(question_id, [])) > 0
             if not is_answered:
-                st.warning("Bitte geben Sie mindestens einen Bearbeiter an.")
+                st.warning(get_text("min_one_processor", language))
 
             all_answered = all_answered and is_answered
 
@@ -325,6 +329,8 @@ def render_processor_matrix_question(question):
     Returns:
         bool: True if the matrix has been filled out, False otherwise
     """
+    language = st.session_state.get("language", "de")
+
     st.markdown(f"**{question['text']}**")
     if "help" in question:
         st.caption(question["help"])
@@ -335,11 +341,11 @@ def render_processor_matrix_question(question):
     data_types = st.session_state.answers.get("data_types", [])
 
     if not processors or not purposes or not data_types:
-        st.info(get_text("matrix_no_data", LANGUAGE))
+        st.info(get_text("matrix_no_data", language))
         return False
 
     # Create matrix UI
-    st.markdown(f"### {get_text('processor_matrix_heading', LANGUAGE)}")
+    st.markdown(f"### {get_text('processor_matrix_heading', language)}")
 
     all_answered = True
 
@@ -385,14 +391,15 @@ def render_processor_matrix_question(question):
                                     has_any_checked = True
 
             # Add quick selection buttons for convenience
-            st.markdown("#### Schnellauswahl")
+            st.markdown(f"#### {get_text('quick_selection', language)}")
 
             # Create select all/none buttons for each purpose
             purpose_cols = st.columns(len(purposes))
             for j, purpose in enumerate(purposes):
                 with purpose_cols[j]:
                     if st.button(
-                        f"Alle für '{purpose}'", key=f"select_all_{processor}_{purpose}"
+                        get_formatted_text("select_all_for", language, purpose=purpose),
+                        key=f"select_all_{processor}_{purpose}",
                     ):
                         for data_type in data_types:
                             question_id = f"matrix_{processor}_{purpose}_{data_type}"
@@ -400,7 +407,9 @@ def render_processor_matrix_question(question):
                         st.rerun()
 
                     if st.button(
-                        f"Keine für '{purpose}'",
+                        get_formatted_text(
+                            "select_none_for", language, purpose=purpose
+                        ),
                         key=f"select_none_{processor}_{purpose}",
                     ):
                         for data_type in data_types:
@@ -409,7 +418,7 @@ def render_processor_matrix_question(question):
                         st.rerun()
 
             # Show current selections
-            st.markdown("#### Aktuelle Auswahl")
+            st.markdown(f"#### {get_text('current_selection', language)}")
             selections = []
             for purpose in purposes:
                 for data_type in data_types:
@@ -421,13 +430,11 @@ def render_processor_matrix_question(question):
                 for selection in selections:
                     st.markdown(f"- {selection}")
             else:
-                st.info("Keine Auswahl getroffen.")
+                st.info(get_text("no_selection", language))
                 all_answered = False
 
     if not all_answered:
-        st.warning(
-            "Bitte wählen Sie für jeden Bearbeiter mindestens eine Kombination aus Zweck und Datenart aus."
-        )
+        st.warning(get_text("min_one_selection", language))
 
     return all_answered
 
@@ -443,19 +450,20 @@ def render_repeated_section(section, answers):
     Returns:
         bool: True if all required questions in the section are answered
     """
+    language = st.session_state.get("language", "de")
+
     repeat_for = section["repeat_for"]
     items = answers.get(repeat_for, [])
 
     if not items:
-        st.info(
-            f"Bitte beantworten Sie zuerst die Frage zu {repeat_for.replace('_', ' ')}."
-        )
+        field_name = repeat_for.replace("_", " ")
+        st.info(get_formatted_text("answer_first", language, field=field_name))
         return False
 
     all_answered = True
 
     for item in items:
-        st.markdown(f"### Details für: **{item}**")
+        st.markdown(get_formatted_text("details_for", language, item=item))
         st.markdown("---")
 
         for question in section["questions"]:
@@ -510,7 +518,9 @@ def render_summary(answers):
     Args:
         answers (dict): The current answers
     """
-    st.header(get_text("summary_title", LANGUAGE))
+    language = st.session_state.get("language", "de")
+
+    st.header(get_text("summary_title", language))
 
     # Prepare data for display
     summary_data = []
@@ -596,7 +606,9 @@ def render_summary(answers):
                             answer_display = ", ".join(processors)
                             summary_data.append(
                                 {
-                                    "Frage": f"Bearbeiter für {party}",
+                                    "Frage": get_formatted_text(
+                                        "processor_for", language, party=party
+                                    ),
                                     "Antwort": answer_display,
                                 }
                             )
@@ -619,50 +631,91 @@ def render_summary(answers):
                         answer_display = "; ".join(matrix_entries)
                         summary_data.append(
                             {
-                                "Frage": f"Zwecke und Datenarten für Bearbeiter {processor}",
+                                "Frage": get_formatted_text(
+                                    "purposes_datatypes_for",
+                                    language,
+                                    processor=processor,
+                                ),
                                 "Antwort": answer_display,
                             }
                         )
 
     # Display as a dataframe
     if summary_data:
+        # Translate column headers based on language
+        if language == "en":
+            for item in summary_data:
+                item["Question"] = item.pop("Frage")
+                item["Answer"] = item.pop("Antwort")
+
         df = pd.DataFrame(summary_data)
         st.dataframe(df, use_container_width=True)
     else:
-        st.info("Noch keine Antworten vorhanden.")
+        st.info(get_text("no_answers", language))
 
 
 def render_sidebar():
-    """Render the sidebar for session management"""
-    st.sidebar.title(get_text("sidebar_title", LANGUAGE))
+    """Render the sidebar for session management and language selection"""
+    language = st.session_state.get("language", "de")
+
+    st.sidebar.title(get_text("sidebar_title", language))
+    st.sidebar.markdown("---")
+
+    # Language selection
+    st.sidebar.subheader(get_text("language_selection", language))
+    language_options = {
+        "de": get_text("language_de", language),
+        "en": get_text("language_en", language),
+    }
+    selected_language = st.sidebar.radio(
+        label="",
+        options=list(language_options.keys()),
+        format_func=lambda x: language_options[x],
+        index=0 if language == "de" else 1,
+        label_visibility="collapsed",
+        key="language_selector",
+    )
+
+    # Update language in session state if changed
+    if selected_language != st.session_state.get("language", "de"):
+        st.session_state.language = selected_language
+        st.rerun()
+
     st.sidebar.markdown("---")
 
     # Session management section
-    st.sidebar.header(get_text("session_management", LANGUAGE))
+    st.sidebar.header(get_text("session_management", language))
 
     # Progress indicator
     if not st.session_state.completed:
         current_index = st.session_state.current_question_index
         progress = min(1.0, (current_index + 1) / len(questions))
         st.sidebar.progress(progress)
-        st.sidebar.caption(f"Frage {current_index + 1} von {len(questions)}")
+        st.sidebar.caption(
+            get_formatted_text(
+                "question_progress",
+                language,
+                current=current_index + 1,
+                total=len(questions),
+            )
+        )
 
     # Session actions
     session_action = st.sidebar.radio(
-        "Session-Optionen:",
+        get_text("session_options", language),
         [
-            get_text("continue_session", LANGUAGE),
-            get_text("export_session", LANGUAGE),
-            get_text("import_session", LANGUAGE),
-            get_text("new_session", LANGUAGE),
+            get_text("continue_session", language),
+            get_text("export_session", language),
+            get_text("import_session", language),
+            get_text("new_session", language),
         ],
     )
 
-    if session_action == get_text("export_session", LANGUAGE):
+    if session_action == get_text("export_session", language):
         # Allow custom naming
         session_name = st.sidebar.text_input(
-            get_text("session_name", LANGUAGE),
-            help="Lassen Sie das Feld leer für einen automatisch generierten Namen",
+            get_text("session_name", language),
+            help=get_text("auto_name", language),
         )
 
         # Generate the export data
@@ -672,37 +725,37 @@ def render_sidebar():
 
         # Create download button
         st.sidebar.download_button(
-            label=get_text("download_session", LANGUAGE),
+            label=get_text("download_session", language),
             data=file_content,
             file_name=file_name,
             mime="application/json",
-            help="Laden Sie Ihre Sitzung herunter, um später fortzufahren",
+            help=get_text("download_help", language),
         )
 
-    elif session_action == get_text("import_session", LANGUAGE):
+    elif session_action == get_text("import_session", language):
         # First-stage: File uploader
         uploaded_file = st.sidebar.file_uploader(
-            get_text("upload_session", LANGUAGE),
+            get_text("upload_session", language),
             type=["json"],
-            help="Laden Sie eine zuvor exportierte Sitzungsdatei hoch",
+            help=get_text("file_upload_help", language),
             key="session_uploader",
         )
 
         # Second-stage: Only process when button is clicked
         if uploaded_file is not None:
             if st.sidebar.button(
-                get_text("import_button", LANGUAGE), key="confirm_import"
+                get_text("import_button", language), key="confirm_import"
             ):
                 if session_manager.import_session(uploaded_file):
-                    st.sidebar.success("Sitzung erfolgreich importiert!")
+                    st.sidebar.success(get_text("session_imported", language))
                     # Force refresh to apply the imported session
                     st.rerun()
 
-    elif session_action == get_text("new_session", LANGUAGE):
-        if st.sidebar.button(get_text("confirm_new", LANGUAGE)):
+    elif session_action == get_text("new_session", language):
+        if st.sidebar.button(get_text("confirm_new", language)):
             # Reset session state
             session_manager.reset_session()
-            st.sidebar.success("Neue Sitzung gestartet!")
+            st.sidebar.success(get_text("session_reset", language))
             # Force refresh
             st.rerun()
 
@@ -710,15 +763,15 @@ def render_sidebar():
 
     # Navigation between sections when questionnaire is complete
     if st.session_state.completed:
-        st.sidebar.header("Navigation")
+        st.sidebar.header(get_text("navigation", language))
 
         view_mode = st.sidebar.radio(
-            "Ansicht:",
+            get_text("view_mode", language),
             [
-                "Zusammenfassung",
-                "Antworten bearbeiten",
-                "Datenflüsse visualisieren",
-                "Richtlinienvorschläge",
+                get_text("summary_view", language),
+                get_text("edit_answers_view", language),
+                get_text("visualize_view", language),
+                get_text("policy_view", language),
             ],
         )
 
@@ -729,7 +782,9 @@ def render_sidebar():
 
 def main():
     """Main application function"""
-    st.title(get_text("app_title", LANGUAGE))
+    language = st.session_state.get("language", "de")
+
+    st.title(get_text("app_title", language))
 
     # Initialize visualizer and policy generator
     visualizer = DataFlowVisualizer()
@@ -740,15 +795,15 @@ def main():
 
     # If questionnaire is completed, show the selected view
     if st.session_state.completed and view_mode:
-        if view_mode == "Zusammenfassung":
+        if view_mode == get_text("summary_view", language):
             render_summary(st.session_state.answers)
 
-        elif view_mode == "Antworten bearbeiten":
-            st.header("Antworten bearbeiten")
-            st.info("Sie können hier alle Ihre bisherigen Antworten bearbeiten.")
+        elif view_mode == get_text("edit_answers_view", language):
+            st.header(get_text("edit_responses", language))
+            st.info(get_text("edit_answers_view", language))
 
             edit_index = st.number_input(
-                "Fragennummer zum Bearbeiten:",
+                get_text("edit_question_number", language),
                 min_value=1,
                 max_value=len(questions),
                 value=1,
@@ -763,7 +818,7 @@ def main():
                 if should_show_question(current_question, st.session_state.answers):
                     render_section(current_question, st.session_state.answers)
                 else:
-                    st.info(get_text("section_not_applicable", LANGUAGE))
+                    st.info(get_text("section_not_applicable", language))
             elif current_question["type"] == "special":
                 if current_question.get("special_type") == "responsible_processors":
                     render_responsible_processors_question(current_question)
@@ -773,20 +828,16 @@ def main():
                 render_question(current_question)
 
             # Add a button to save changes
-            if st.button("Änderungen speichern"):
-                st.success("Änderungen erfolgreich gespeichert!")
+            if st.button(get_text("save_changes", language)):
+                st.success(get_text("changes_saved", language))
 
-        elif view_mode == "Datenflüsse visualisieren":
-            st.header("Datenfluss-Visualisierung")
-            st.info(
-                "Die Visualisierungsfunktion ist ein Platzhalter und wird in einem späteren Schritt implementiert."
-            )
+        elif view_mode == get_text("visualize_view", language):
+            st.header(get_text("visualize", language))
+            visualizer.render_visualization(st.session_state.answers)
 
-        elif view_mode == "Richtlinienvorschläge":
-            st.header("Richtlinienvorschläge")
-            st.info(
-                "Die Richtlinienvorschläge sind ein Platzhalter und werden in einem späteren Schritt implementiert."
-            )
+        elif view_mode == get_text("policy_view", language):
+            st.header(get_text("policy_suggestions", language))
+            policy_generator.render_policy_suggestions(st.session_state.answers)
 
     # If questionnaire is not completed or "Edit Responses" is selected, show the questionnaire
     else:
@@ -826,35 +877,35 @@ def main():
 
             with col1:
                 if current_index > 0:
-                    if st.button(get_text("previous", LANGUAGE)):
+                    if st.button(get_text("previous", language)):
                         st.session_state.current_question_index -= 1
                         st.rerun()
 
             with col3:
                 if all_answered:
                     if current_index < len(questions) - 1:
-                        if st.button(get_text("next", LANGUAGE)):
+                        if st.button(get_text("next", language)):
                             st.session_state.current_question_index += 1
                             st.rerun()
                     else:
-                        if st.button(get_text("complete", LANGUAGE)):
+                        if st.button(get_text("complete", language)):
                             st.session_state.completed = True
                             # Remind user to download their session
-                            st.success(get_text("completion_success", LANGUAGE))
+                            st.success(get_text("completion_success", language))
                             st.rerun()
                 else:
-                    st.button(get_text("next", LANGUAGE), disabled=True)
+                    st.button(get_text("next", language), disabled=True)
 
                     if current_question["type"] in [
                         "repeated_section",
                         "section",
                         "special",
                     ]:
-                        st.warning(get_text("section_required_warning", LANGUAGE))
+                        st.warning(get_text("section_required_warning", language))
                     else:
                         required = current_question.get("required", False)
                         if required:
-                            st.warning(get_text("required_warning", LANGUAGE))
+                            st.warning(get_text("required_warning", language))
 
 
 if __name__ == "__main__":
