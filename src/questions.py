@@ -22,6 +22,103 @@ SENSITIVE_DATA_CATEGORIES = [
     "Daten über Berufs-, Geschäfts- und Fabrikationsgeheimnisse (juristische Personen)",
 ]
 
+SYSTEM_DEFAULT = [
+    "IT Server 1",
+    "Elektronische Patientenakte",
+    "Laborinformationssystem",
+    "Radiologie-PACS",
+    "Apothekenmanagementsystem",
+    "Krankenhausinformationssystem",
+    "Abrechnungssystem",
+    "Personalverwaltungssystem",
+    "Terminplanungssystem",
+    "Lagerverwaltungssystem",
+]
+VERANTWORTLICH_DEFAULT = [
+    "Hans Müller",
+    "Ursula Weber",
+    "Marco Bernasconi",
+    "Sophie Dubois",
+    "Peter Keller",
+    "Marie Zürcher",
+    "Thomas Schmid",
+    "Heidi Brunner",
+    "Daniel Meier",
+    "Anna Steiner",
+]
+BEARBEITER_DEFAULT = [
+    "Dr. Petra Koch",
+    "Dr. Stefan Wagner",
+    "Dr. Lisa Huber",
+    "Pfleger Martin Baumann",
+    "Schwester Andrea Moser",
+    "Dr. Michael Fischer",
+    "Dr. Sarah Berg",
+    "Pfleger David Schmitz",
+    "Schwester Julia Keller",
+    "Dr. Thomas Weber",
+    "Dr. Christina Müller",
+    "Pfleger Simon Bauer",
+    "Schwester Nicole Meyer",
+    "Dr. Andreas Hoffmann",
+    "Dr. Sandra Wolf",
+    "Chirurgische Abteilung",
+    "Innere Medizin",
+    "Radiologie",
+    "Notfallstation",
+    "Kardiologie",
+    "Pädiatrie",
+    "Onkologie",
+    "Gynäkologie",
+    "Intensivstation",
+    "Pflegeabteilung",
+    "Pathologie",
+    "Anästhesiologie",
+    "Dermatologie",
+    "Psychiatrie",
+    "Ambulanz",
+]
+
+SYSTEM_ZIELE_DEFAULT = [
+    "zur Verbesserung des Workflows",
+    "zum Speichern von Patientendaten",
+    "zur Dokumentation von Behandlungen",
+    "zum Management der Ressourcen",
+    "zur Abrechnung von Leistungen",
+    "zur Qualitätssicherung",
+    "zum Austausch von Informationen",
+    "zur Planung von Terminen",
+    "zum Controlling der Prozesse",
+    "zur Integration verschiedener Systeme",
+]
+BEARBEITUNGS_ZWECK_DEFAULT = [
+    "zum Vertragsabschluss oder -abwicklung",
+    "zur Prüfung der Kreditwürdigkeit",
+    "zum Wettbewerb",
+    "zur Erfüllung gesetzlicher Grundlagen",
+    "zur Erfüllung eines überwiegenden öffentlichen Interesses",
+    "zur Erfüllung eines überwiegenden privaten Interesses",
+    "zur Einwilligung der betroffenen Person",
+]
+DATENARTEN_DEFAULT = [
+    "Patientenstammdaten",
+    "Spenderdaten",
+    "Laborergebnisse",
+    "Medizinische Befunde",
+    "Behandlungshistorie",
+    "Medikamentendaten",
+    "Versicherungsinformationen",
+    "Impfdaten",
+    "Allergien und Unverträglichkeiten",
+    "Familienanamnese",
+    "Bildgebende Diagnostik",
+    "Therapiepläne",
+    "Überweisungsdaten",
+    "Notfalldaten",
+    "Pflegedokumentation",
+]
+
+
 # Define the questionnaire structure
 questions = [
     # Question 1: Systems used
@@ -31,7 +128,14 @@ questions = [
         "text": "Welche Systeme werden eingesetzt?",
         "required": True,
         "store_as_list": True,
+<<<<<<< HEAD
         "help": "Geben Sie die Namen der eingesetzten Systeme ein.",
+=======
+        "default": SYSTEM_DEFAULT,
+        # Denkfehler hier : der User kann mehrere Systeme pro Eintrag eingeben.
+        # old        "help": "Geben Sie die Namen der eingesetzten Systeme ein, durch Kommas getrennt.",
+        "help": "Geben Sie die Namen der eingesetzten Systeme ein. Bitte auf Hinzufügen clicken, damit die Liste aktualisiert wird.",
+>>>>>>> 593eba2 (>feat : add default and did a test run)
     },
     # Question 1.1-1.2: Details for each system
     {
@@ -43,6 +147,7 @@ questions = [
                 "id": "system_purpose_{item}",
                 "type": TEXT,
                 "text": "Wozu dient das System {item}?",
+                "default": SYSTEM_ZIELE_DEFAULT,
                 "required": True,
                 "multiline": True,
             },
@@ -50,6 +155,7 @@ questions = [
                 "id": "system_responsible_{item}",
                 "type": TEXT,
                 "text": "Wer ist für das System {item} verantwortlich?",
+                "default": VERANTWORTLICH_DEFAULT,
                 "required": True,
                 "store_as_list": True,
                 "help": "Geben Sie die Namen der Verantwortlichen ein.",
@@ -61,6 +167,8 @@ questions = [
         "id": "additional_responsible",
         "type": TEXT,
         "text": "Gibt es Verantwortliche, die nicht Systembetreiber sind?",
+        "default": VERANTWORTLICH_DEFAULT,
+        "default": VERANTWORTLICH_DEFAULT,
         "required": False,
         "store_as_list": True,
         "help": "Geben Sie die Namen weiterer Verantwortlicher ein oder lassen Sie das Feld leer.",
@@ -78,6 +186,7 @@ questions = [
         "id": "processing_purposes",
         "type": TEXT,
         "text": "Welche Bearbeitungszwecke gibt es?",
+        "default": BEARBEITUNGS_ZWECK_DEFAULT,
         "required": True,
         "store_as_list": True,
         "help": "Geben Sie die möglichen Bearbeitungszwecke ein getrennt.",
@@ -86,7 +195,8 @@ questions = [
     {
         "id": "data_types",
         "type": TEXT,
-        "text": "Welche Datenarten gibt es?",
+        "text": "Welche Datenarten werden im System behandelt?",
+        "default": DATENARTEN_DEFAULT,
         "required": True,
         "store_as_list": True,
         "help": "Geben Sie die Datenarten ein",
