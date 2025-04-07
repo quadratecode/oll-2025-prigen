@@ -888,8 +888,8 @@ a.	 Datenart 1 : Zum Zweck m Daten vom Typ …
 <BEISPIEL>
 Art. 23c	Datenbearbeitungen
 1 Die Transplantationszentren sind berechtigt, die nachstehenden im SOAS enthaltenen Daten zu bearbeiten:
-a.	Datenkategorien «Wartende», «Nicht-Überkreuz-Beteiligte» und «Überkreuz-Beteiligte» : Zur Betreuung, Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten. 
-b.	Datenkategorie «Zuteilungsdaten» : Zur Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten. 
+a.	Datenkategorien «Wartende», «Nicht-Überkreuz-Beteiligte» und «Überkreuz-Beteiligte» : Zur Betreuung, Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten.
+b.	Datenkategorie «Zuteilungsdaten» : Zur Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten.
 
 </BEISPIEL>
 Art. 118	Informationssystem
@@ -934,13 +934,13 @@ c.	 <ZWECK> .
 
 <BEISPIEL>
 Art. 117	Bearbeitung von Personendaten und Daten juristischer Personen
-1 Das BAG kann Personendaten, einschliesslich besonders schützenswerter Personendaten, und Daten von juristischen Personen, einschliesslich besonders schützenswerter Daten, nur bearbeiten, sofern dies notwendig ist für: 
+1 Das BAG kann Personendaten, einschliesslich besonders schützenswerter Personendaten, und Daten von juristischen Personen, einschliesslich besonders schützenswerter Daten, nur bearbeiten, sofern dies notwendig ist für:
 a.	den Vollzug dieses Gesetzes;
 b.	den Vollzug der Abgabeerlasse;
 c.	den Vollzug der nichtabgaberechtlichen Erlasse; oder
 d.	die Erfüllung von Aufgaben, die ihm gestützt auf völkerrechtliche Verträge übertragen worden sind.
 
-2 Es kann Risikoanalysen, Profilings und Profilings mit hohem Risiko nur durchführen, sofern dies notwendig ist für: 
+2 Es kann Risikoanalysen, Profilings und Profilings mit hohem Risiko nur durchführen, sofern dies notwendig ist für:
 a.	den Vollzug dieses Gesetzes;
 b.	den Vollzug der Abgabeerlasse;
 c.	den Vollzug der nichtabgaberechtlichen Erlasse; oder
@@ -965,7 +965,7 @@ Art. 135	Zugriff durch Mitarbeiterinnen und Mitarbeiter des BAZG
 
 
 <MUSTER>
-Art x  Bekanntgaben des <BEKANNTGABENDE> an  <EMPFÄNGER> 
+Art x  Bekanntgaben des <BEKANNTGABENDE> an  <EMPFÄNGER>
 
 1  Der <BEKANNTGABENDE> gibt den Mitarbeiterinnen und Mitarbeitern des  Empfängers 1  , die für xy zuständig sind, Daten in Bekanntgabeform bekannt.
 
@@ -1009,7 +1009,7 @@ Der Bundesrat regelt die Bekanntgabe von nicht besonders schützenswerten Person
 
 <BEISPIEL>
 Art. 23c	Datenbearbeitung
-2 Personen, die an einem Zuteilungsprozess teilgenommen haben oder ein Organ gespendet oder empfangen haben, können keine Löschung ihrer Daten verlangen. 
+2 Personen, die an einem Zuteilungsprozess teilgenommen haben oder ein Organ gespendet oder empfangen haben, können keine Löschung ihrer Daten verlangen.
 </BEISPIEL>
 
 <BEISPIEL>
@@ -1018,7 +1018,7 @@ Art. 23l	System für die Organzuteilung bei der Überkreuz-Lebendspende
 </BEISPIEL>
 
 <BEISPIEL>
-Art. 23o	Blut-Stammzellenregister 
+Art. 23o	Blut-Stammzellenregister
 …
 6 Eine im Register eingetragene Person kann nur die Löschung der sie betreffenden Daten verlangen, solange noch keine Tests für eine konkrete Spende durchgeführt wurden. Personen, die schon Blut-Stammzellen gespendet oder empfangen haben, können keine Löschung ihrer Daten verlangen.
 </BEISPIEL>
@@ -1086,7 +1086,7 @@ Art. 169
 
 
 """
-	    prompt = prompt+"\n"+prompt_template 
+            prompt = prompt+"\n"+prompt_template
             json_data = {
                 'model': 'llama3.3-70b',
                 'stream': False,
