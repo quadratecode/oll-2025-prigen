@@ -31,7 +31,7 @@ questions = [
         "text": "Welche Systeme werden eingesetzt?",
         "required": True,
         "store_as_list": True,
-        "help": "Geben Sie die Namen der eingesetzten Systeme ein, durch Kommas getrennt.",
+        "help": "Geben Sie die Namen der eingesetzten Systeme ein.",
     },
     # Question 1.1-1.2: Details for each system
     {
@@ -52,7 +52,7 @@ questions = [
                 "text": "Wer ist für das System {item} verantwortlich?",
                 "required": True,
                 "store_as_list": True,
-                "help": "Geben Sie die Namen der Verantwortlichen ein, durch Kommas getrennt.",
+                "help": "Geben Sie die Namen der Verantwortlichen ein.",
             },
         ],
     },
@@ -63,7 +63,7 @@ questions = [
         "text": "Gibt es Verantwortliche, die nicht Systembetreiber sind?",
         "required": False,
         "store_as_list": True,
-        "help": "Geben Sie die Namen weiterer Verantwortlicher ein, durch Kommas getrennt, oder lassen Sie das Feld leer.",
+        "help": "Geben Sie die Namen weiterer Verantwortlicher ein oder lassen Sie das Feld leer.",
     },
     # Question 3: Processors for each responsible party (special handling)
     {
@@ -80,7 +80,7 @@ questions = [
         "text": "Welche Bearbeitungszwecke gibt es?",
         "required": True,
         "store_as_list": True,
-        "help": "Geben Sie die Bearbeitungszwecke ein, durch Kommas getrennt.",
+        "help": "Geben Sie die möglichen Bearbeitungszwecke ein getrennt.",
     },
     # Question 5: Data types
     {
@@ -89,7 +89,7 @@ questions = [
         "text": "Welche Datenarten gibt es?",
         "required": True,
         "store_as_list": True,
-        "help": "Geben Sie die Datenarten ein, durch Kommas getrennt.",
+        "help": "Geben Sie die Datenarten ein",
     },
     # Question 5.1: Categories for each data type
     {
