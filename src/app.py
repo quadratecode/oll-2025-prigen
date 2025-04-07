@@ -136,7 +136,6 @@ def render_question(question, item=None):
             with st.form(key=f"add_item_form_{question_id}"):
                 new_item = st.text_input(
                     "Neuen Eintrag hinzufügen:",
-
                     key=f"input_{question_id}",
                     value=default_value,
                     max_chars=question.get(
@@ -709,15 +708,13 @@ def render_summary(answers):
                 item["Question"] = item.pop("Frage")
                 item["Answer"] = item.pop("Antwort")
 
-
-        llm=True
+        llm = True
         df = pd.DataFrame(summary_data)
 
         if llm:
-
             headers = {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + open(".env").read().rstrip().split("=")[1],
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + open(".env").read().rstrip().split("=")[1],
             }
 
             prompt = """
@@ -1086,26 +1083,28 @@ Art. 169
 
 
 """
-            prompt = prompt+"\n"+prompt_template
+            prompt = prompt + "\n" + prompt_template
             json_data = {
-                'model': 'llama3.3-70b',
-                'stream': False,
-                'messages': [
+                "model": "llama3.3-70b",
+                "stream": False,
+                "messages": [
                     {
-                        'content': prompt.format(df.to_markdown()),
-                        'role': 'user',
+                        "content": prompt.format(df.to_markdown()),
+                        "role": "user",
                     },
                 ],
-                'temperature': 0,
-                'max_completion_tokens': -1,
-                'seed': 0,
-                'top_p': 1,
+                "temperature": 0,
+                "max_completion_tokens": -1,
+                "seed": 0,
+                "top_p": 1,
             }
 
-            response = requests.post('https://api.cerebras.ai/v1/chat/completions', headers=headers, json=json_data)
-            st.markdown(
-            json.loads(response.text)["choices"][0]["message"]["content"]
+            response = requests.post(
+                "https://api.cerebras.ai/v1/chat/completions",
+                headers=headers,
+                json=json_data,
             )
+            st.markdown(json.loads(response.text)["choices"][0]["message"]["content"])
         else:
             st.dataframe(df, use_container_width=True)
     else:
