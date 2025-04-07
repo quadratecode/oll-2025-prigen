@@ -12,14 +12,14 @@ SPECIAL = "special"  # For questions that need special handling
 
 # Define sensitive data categories for question 5.1
 SENSITIVE_DATA_CATEGORIES = [
-    "Daten über religiöse, weltanschauliche, politische oder gewerkschaftliche Ansichten oder Tätigkeiten",
-    "Daten über die Gesundheit, die Intimsphäre oder die Zugehörigkeit zu einer Rasse oder Ethnie",
-    "genetische Daten",
-    "biometrische Daten, die eine natürliche Person eindeutig identifizieren",
-    "Daten über verwaltungs- und strafrechtliche Verfolgungen oder Sanktionen",
-    "Daten über Massnahmen der sozialen Hilfe",
-    "Daten über verwaltungs- und strafrechtliche Verfolgungen und Sanktionen",
-    "Daten über Berufs-, Geschäfts- und Fabrikationsgeheimnisse",
+    "Daten über religiöse, weltanschauliche, politische oder gewerkschaftliche Ansichten oder Tätigkeiten (natürliche Personen)",
+    "Daten über die Gesundheit, die Intimsphäre oder die Zugehörigkeit zu einer Rasse oder Ethnie (natürliche Personen)",
+    "genetische Daten (natürliche Personen)",
+    "biometrische Daten, die eine natürliche Person eindeutig identifizieren (natürliche Personen)",
+    "Daten über verwaltungs- und strafrechtliche Verfolgungen oder Sanktionen (natürliche Personen)",
+    "Daten über Massnahmen der sozialen Hilfe (natürliche Personen)",
+    "Daten über verwaltungs- und strafrechtliche Verfolgungen und Sanktionen (juristische Personen)",
+    "Daten über Berufs-, Geschäfts- und Fabrikationsgeheimnisse (juristische Personen)",
 ]
 
 # Define the questionnaire structure
