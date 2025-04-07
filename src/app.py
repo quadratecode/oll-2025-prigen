@@ -722,11 +722,11 @@ def render_summary(answers):
 
             prompt = """
 
-            Du bist ein Experte für schweizerische Gesetzgebung mit Schwerpunkt Datenschutzrecht. Auf Grundlage der nachfolgenden strukturierten Übersicht sollst du einen kohärenten Gesetzestext in Fließtextform formulieren – orientiert an der sprachlichen und formalen Gestaltung des Schweizer Datenschutzgesetzes (DSG).
+            Du bist ein Experte für schweizerische Gesetzgebung mit Schwerpunkt Datenschutzrecht. Auf Grundlage der nachfolgenden strukturierten Übersicht sollst du eine kohärente Datenschutzbestimmung in Fließtextform formulieren.
 
             **Anforderungen an die Ausgabe:**
 
-            - Der Gesetzestext soll vollständig als zusammenhängender Fließtext erscheinen – **ohne Bulletpoints, Nummerierungen, Listen oder Tabellen**.
+            - Die Datenschutzbestimmung soll vollständig als zusammenhängender Fließtext erscheinen – **ohne Bulletpoints, Nummerierungen, Listen oder Tabellen**.
             - Orientiere dich am **juristischen Stil** der schweizerischen Gesetzgebung: sachlich, klar, geschlechtsneutral, präzise.
             - Nutze die nachstehende **strukturierte Gesetzesgliederung** als inhaltliche Orientierung. Die Titel sollen sinngemäß in den Text eingebaut werden – entweder als Überschriften oder eingebettet im Fließtext.
             - Die Begriffe und Inhalte sollen wie bei echten Gesetzestexten in **Artikelstruktur** gegossen sein. Die Abschnitte innerhalb eines Kapitels (z. B. 3.1 und 3.2) dürfen als getrennte Artikel formuliert werden.
@@ -748,17 +748,17 @@ def render_summary(answers):
             | 7.1         | Abschnitt: Aufbewahrung                 |
             | 7.2         | Abschnitt: Archivierung und Vernichtung |
 
-            Ergänze diesen Text so, dass er einer vollständigen Regelung für Organisationen in der Schweiz entspricht – in Anlehnung an das Bundesgesetz über den Datenschutz (DSG) und unter Beachtung der föderalen Rahmenbedingungen. Bitte verwende dafür den folgenden Datensatz:
+            Ergänze diesen Text so, dass er einer vollständigen Regelung für Organisationen in der Schweiz entspricht. Bitte verwende dafür den folgenden Datensatz:
 
             ```
             {}
             ```
 
-            Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte aufpassen, dass Headers in der richtige Reihenfolge formatiert werden, und bitte pass auf die differenzierung zwischen kapitel und artikel mit indent.
+            Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte verwende bold-underlined, italic for headers and sub headers of the document. carriage returns between headers / subheaders and text.
             """
 
             json_data = {
-                'model': 'llama3.1-8b',
+                'model': 'llama3.3-70b',
                 'stream': False,
                 'messages': [
                     {
