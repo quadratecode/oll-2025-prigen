@@ -912,7 +912,7 @@ def main():
     """Main application function"""
     language = st.session_state.get("language", "de")
 
-    st.title(get_text("app_title", language))
+    # st.title(get_text("app_title", language))
 
     # Initialize visualizer and policy generator
     visualizer = DataFlowVisualizer()
