@@ -464,6 +464,8 @@ def render_repeated_section(section, answers):
 
     for item in items:
         st.markdown(get_formatted_text("details_for", language, item=item))
+        item = item.strip('"').strip("[").strip("]")
+        st.markdown(f"### Details for: **{item}**")
         st.markdown("---")
 
         for question in section["questions"]:
