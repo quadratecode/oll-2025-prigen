@@ -757,6 +757,336 @@ def render_summary(answers):
             Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte verwende bold-underlined, italic for headers and sub headers of the document. carriage returns between headers / subheaders and text.
             """
 
+            prompt_template = """
+
+Wer darf was warum/wozu bearbeiten ?
+
+Der Verantwortliche betreibt das System zum Zweck
+
+<SYSTEM>
+Der <VERANTWORTLICHE> betreibt (…) ein Informationssystem .
+Der <VERANTWORTLICHE> betreibt (…) ein System zur Vermittlung (…).
+
+Das <SYSTEM> dient:
+
+<VERANTWORTLICHE>
+
+<ZWECK>
+
+<BEISPIEL>
+	A betreibt für Zweck das System x.
+	B bearbeitet für Zweck die Datentypen y und z.
+</BEISPIEL>
+
+<BEISPIEL>
+A betreibt das System x für Zweck .
+B bearbeitet die Datentypen y und z für Zweck .
+</BEISPIEL>
+
+<BEISPIEL>
+A betreibt das System x zu Zweck 1 , Zweck 2 und Zweck 3 .
+B bearbeitet die Datentypen y und z zu Zweck 1 , Zweck 2 und Zweck 3 .
+</BEISPIEL>
+
+<BEISPIEL>
+A betreibt das System x zu:
+a.	 Zweck 1 ;
+b.	 Zweck 2 und
+c.	 Zweck 3 .
+B bearbeitet die Datentypen y und z:
+a.	 Zweck 1 ;
+b.	 Zweck 2 und
+c.	 Zweck 3 .
+</BEISPIEL>
+
+<BEISPIEL>
+…. zur Erfüllung seiner Aufgaben
+…. zur Erfüllung seiner Aufgaben nach diesem Gesetz
+…. zur Erfüllung seiner Aufgaben nach Artikeln xy
+</BEISPIEL>
+
+<BEISPIEL>
+Art. 15d	Lebendspende-Nachsorgeregister
+1 Jede Lebendspende-Nachsorgestelle führt ein Register für die Nachsorge der von ihr betreuten Spenderinnen und Spender.
+</BEISPIEL>
+
+<BEISPIEL>
+Art. 23a	Betrieb, Zweck und Verhältnis zur Heilmittelgesetzgebung
+
+1 Das BAG betreibt das Swiss Organ Allocation System (SOAS).
+
+2 Das SOAS dient:
+a.	zur Wahrnehmung der Aufgaben nach dem 4. Abschnitt;
+b.	zur Gewährleistung der Rückverfolgbarkeit der für die Spenden und Transplantationen relevanten Vorgänge;
+c.	der Aufsicht durch das BAG.
+</BEISPIEL>
+
+
+
+Der <VERANTWORTLICHE> betreibt das <SYSTEM> zum <ZWECK>
+
+<BEISPIEL>
+	Art. 118	Informationssystem
+	Das BAZG betreibt zur Erfüllung seiner Aufgaben ein Informationssystem.
+</BEISPIEL>
+
+<DATENTYP>
+<DATENART>
+<BEKANNTGABEFORM>
+<BEGRIFFE>
+
+<BEISPIEL>
+Art. X Begriffe
+1. <BEGRIFF>: <DEFINITION>
+</BEISPIEL>
+
+<GESETZESKONKURRENZEN>
+
+<BEISPIEL>
+Art x Verhältnis zu anderen Gesetzen
+Die Bestimmungen des anderes Gesetz sind auf welche Bereiche wie anwendbar.
+</BEISPIEL>
+
+<BEISPIEL>
+Art. 23a	Betrieb, Zweck und Verhältnis zur Heilmittelgesetzgebung
+3 Die Bestimmungen der Heilmittelgesetzgebung zu Medizinprodukten sind auf das SOAS nicht anwendbar.
+</BEISPIEL>
+
+<DATENART>
+
+Art xy
+Das Informationssystem des BAG umfasst die folgenden Datenarten
+<DATENART> : <DEFINITION>,
+<DATENART> : <DEFINITION>;
+<DATENART> : <DEFINITION>;
+
+<BEISPIEL>
+Art. 23b	Inhalt
+Das SOAS enthält folgende Daten:
+a.	Daten über die Identität und die Gesundheit sowie genetische Daten:
+1.	der Personen auf der Warteliste,
+2.	der spendenden und empfangenden Personen bei der Spende durch verstorbene Personen und bei der Lebendspende,
+3.	der am Überkreuz-Lebendspende-Programm nach dem 4b. Abschnitt teilnehmenden Personen;
+b.	Daten, die während des Zuteilungsverfahrens generiert werden.
+</BEISPIEL>
+
+
+<BEARBEITUNGEN>
+
+Der <BEARBEITENDE> bearbeitet zu diesen <ZWECKE> diese <DATENART>, welche datenschutzrechtlich diese <DATENTYP> umfassen.
+
+Art x  Datenbearbeitungen
+1  Der <BEARBEITENDE> bearbeitet
+a.	 Datenart 1 : Zu den Zwecken a, b und c Daten vom Typ
+ Datentyp 1 ,  Datentyp 2  und  Datentyp 3
+b.	 Datenart 2 : Zum Zweck e Daten vom Typ
+ Datentyp 4  und  Datentyp 5
+2 Der Bearbeitende 2 bearbeitet:
+a.	 Datenart 1 : Zum Zweck m Daten vom Typ …
+
+
+<BEISPIEL>
+Art. 23c	Datenbearbeitungen
+1 Die Transplantationszentren sind berechtigt, die nachstehenden im SOAS enthaltenen Daten zu bearbeiten:
+a.	Datenkategorien «Wartende», «Nicht-Überkreuz-Beteiligte» und «Überkreuz-Beteiligte» : Zur Betreuung, Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten. 
+b.	Datenkategorie «Zuteilungsdaten» : Zur Erfüllung ihrer Aufgaben nach diesem Gesetz und zur gegenseitigen Kontrolle: Daten über die Identität und die Gesundheit sowie genetische Daten. 
+
+</BEISPIEL>
+Art. 118	Informationssystem
+Das BAZG betreibt zur Erfüllung seiner Aufgaben ein Informationssystem.
+
+Art 119
+
+Das Informationssystem des BAZG umfasst die folgenden Datenkategorien:
+o.	grenzüberschreitender Warenverkehr: Daten des grenzüberschreitenden Warenverkehrs zur Erhebung und Rückerstattung der Ein- und Ausfuhrabgaben (Art. 7 Abs. 2 Bst. a) und zum Vollzug nichtabgaberechtlicher Erlasse (Art. 7 Abs. 2 Bst. c);
+p.	Inlandabgaben: Daten betreffend die Inlandabgaben (Art. 7 Abs. 2 Bst. a);
+q.	Kontrollen: Daten der Kontrolle des Waren- und Personenverkehrs und der hierfür verwendeten Transportmittel (Art. 7 Abs. 2 Bst. b);
+r.	Unternehmensprüfung: Daten der Kontrollen im Rahmen von Unternehmensprüfungen (Art. 7 Abs. 2 Bst. a und b);
+s.	(…);
+t.	Administrativmassnahmen: Daten des Vollzugs von administrativen Massnahmen (Art. 73);
+u.	Strafverfolgung: Daten der Strafverfolgung (Art. 7 Abs. 2 Bst. f);
+v.	Vollzug von Strafen und Massnahmen: Daten des Vollzugs von Strafen und Massnahmen (Art. 7 Abs. 2 Bst. f);
+w.	Finanzen: Daten des Finanzmanagements des BAZG;
+x.	(…);
+y.	Risikoanalyse und Profiling: Daten der Risikoanalysen (Art. 131) sowie des Profilings und des Profilings mit hohem Risiko (Art. 133);
+z.	(…);
+aa.	administrative Tätigkeiten: Daten betreffend administrative Tätigkeiten des BAZG;
+bb.	kantonale polizeiliche Aufgaben: Daten betreffend die Erfüllung kantonaler polizeilicher Aufgaben durch das BAZG (Art. 10).
+
+<BEISPIEL>
+Art. 15d	Lebenspende-Nachsorgeregister
+
+4 Zur Bearbeitung der Daten berechtigt sind:
+a.	die Spenderinnen und Spender: bezüglich ihrer eigenen Daten.
+</BEISPIEL>
+
+
+
+<PROFILING>
+<MUSTER>
+1 <BEARBEITENDE> kann Risikoanalysen, Profilings und Profilings mit hohem Risiko nur durchführen, sofern dies notwendig ist für:
+a.	 <ZWECK> ;
+b.	 <ZWECK> ;
+c.	 <ZWECK> .
+</MUSTER>
+
+
+
+<BEISPIEL>
+Art. 117	Bearbeitung von Personendaten und Daten juristischer Personen
+1 Das BAG kann Personendaten, einschliesslich besonders schützenswerter Personendaten, und Daten von juristischen Personen, einschliesslich besonders schützenswerter Daten, nur bearbeiten, sofern dies notwendig ist für: 
+a.	den Vollzug dieses Gesetzes;
+b.	den Vollzug der Abgabeerlasse;
+c.	den Vollzug der nichtabgaberechtlichen Erlasse; oder
+d.	die Erfüllung von Aufgaben, die ihm gestützt auf völkerrechtliche Verträge übertragen worden sind.
+
+2 Es kann Risikoanalysen, Profilings und Profilings mit hohem Risiko nur durchführen, sofern dies notwendig ist für: 
+a.	den Vollzug dieses Gesetzes;
+b.	den Vollzug der Abgabeerlasse;
+c.	den Vollzug der nichtabgaberechtlichen Erlasse; oder
+d.	die Erfüllung von Aufgaben, die ihm gestützt auf völkerrechtliche Verträge übertragen worden sind.
+</BEISPIEL>
+
+
+<ZUGRIFFSRECHTE>
+
+<BEISPIEL>
+Art. 135	Zugriff durch Mitarbeiterinnen und Mitarbeiter des BAZG
+1 Die Mitarbeiterinnen und Mitarbeiter des BAZG haben nur auf die Daten im Informationssystem Zugriff, die zur Erfüllung ihrer Aufgaben erforderlich sind.
+2 Der Zugriff auf besonders schützenswerte Personendaten und besonders schützenswerte Daten von juristischen Personen ist in Anhang 1 Ziffer 1 geregelt.
+3 Der Bundesrat regelt die Zugriffsrechte in Bezug auf nicht besonders schützenswerte Personendaten und nicht besonders schützenswerte Daten von juristischen Personen.
+</BEISPIEL>
+
+
+<BEKANNTGABEN>
+<MUSTER>
+<BEKANNTGABENDE> gibt dem <EMPFÄNGER> diese <DATENARTEN> bekannt, welche datenschutzrechtlich diese <DATENTYPEN> umfassen. Die Bekanntgabe erfolgt in dieser <BEKANNTGABEFORM> zu diesen <ZWECKEN>.
+</MUSTER>
+
+
+<MUSTER>
+Art x  Bekanntgaben des <BEKANNTGABENDE> an  <EMPFÄNGER> 
+
+1  Der <BEKANNTGABENDE> gibt den Mitarbeiterinnen und Mitarbeitern des  Empfängers 1  , die für xy zuständig sind, Daten in Bekanntgabeform bekannt.
+
+2  Die Bekanntgabe ist auf die nachstehenden Daten in den folgenden Datenkategorien beschränkt:
+a.	 <DATENART> : <DATENART> ,  <DATENTYP>  und  <DATENTYP> ;
+b.	 <DATENART> : <DATENTYP>  und  <DATENTYP> .
+
+3 Die Daten dürfen nur zu folgenden Zwecken bekanntgegeben werden:
+c.	 <ZWECK> ;
+d.	 <ZWECK> .
+</MUSTER>
+
+
+<MUSTER>
+2   Die Bekanntgabe ist beschränkt auf  Datenart 1   und  Datenart 2  , welche auch besonders schützenswerte Personendaten und besonders schützenswerter Daten von juristischen Personen umfassen können.
+</MUSTER>
+
+
+<BEISPIEL>
+Art. 137   Abrufverfahren für das fedpol
+
+1 Das BAZG gibt den Mitarbeiterinnen und Mitarbeitern des Bundesamts für Polizei (fedpol), die Aufgaben im Bereich der Bekämpfung der Kriminalität wahrnehmen, Daten im Informationssystem des BAZG im Abrufverfahren bekannt, insbesondere wenn es sich um Folgendes handelt:
+a.	Straftaten, die der Bundesgerichtsbarkeit unterstehen;
+b.	Geldwäscherei, einschliesslich der entsprechenden Vortaten, organisierte Kriminalität oder Terrorismusfinanzierung
+(…)
+Art. 139   Abrufverfahren für den NDB
+1 Das BAZG gibt den Mitarbeiterinnen und Mitarbeitern des Nachrichtendienstes des Bundes (NDB) mit folgenden Aufgaben Daten im Informationssystem des BAZG im Abrufverfahren bekannt:
+a.	Erfassung, Beschaffung und Auswertung relevanter Daten;
+b.	Identifikation von Personen.
+2 Der Abruf ist auf die nachstehenden Daten in den folgenden Datenkategorien beschränkt:
+</BEISPIEL>
+
+<BEISPIEL>
+5. Abschnitt: Bekanntgabe von nicht besonders schützenswerten Personendaten und nicht besonders schützenswerten Daten von juristischen Personen
+Art. 154
+Der Bundesrat regelt die Bekanntgabe von nicht besonders schützenswerten Personendaten und nicht besonders schützenswerten Daten von juristischen Personen.
+</BEISPIEL>
+
+
+<EINSCHRÄNKUNG_BETROFFENENRECHTE>
+
+<BEISPIEL>
+Art. 23c	Datenbearbeitung
+2 Personen, die an einem Zuteilungsprozess teilgenommen haben oder ein Organ gespendet oder empfangen haben, können keine Löschung ihrer Daten verlangen. 
+</BEISPIEL>
+
+<BEISPIEL>
+Art. 23l	System für die Organzuteilung bei der Überkreuz-Lebendspende
+6 Personen, die an einem Programm teilnehmen, können keine Löschung ihrer Daten verlangen, sobald sie bei der Ermittlung der besten Kombinationen berücksichtigt worden sind.
+</BEISPIEL>
+
+<BEISPIEL>
+Art. 23o	Blut-Stammzellenregister 
+…
+6 Eine im Register eingetragene Person kann nur die Löschung der sie betreffenden Daten verlangen, solange noch keine Tests für eine konkrete Spende durchgeführt wurden. Personen, die schon Blut-Stammzellen gespendet oder empfangen haben, können keine Löschung ihrer Daten verlangen.
+</BEISPIEL>
+
+<AUFBEWAHRUNG>
+
+
+<BEISPIEL>
+Art. x     Aufbewahrung
+
+Die im System y enthaltenen Personendaten, besonders schützenswerten Personendaten, Daten von juristischen Personen und besonders schützenswerten Daten von juristischen Personen, dürfen so lange aufbewahrt werden, wie es der Bearbeitungszweck erfordert
+</BEISPIEL>
+
+<BEISPIEL>
+1. Abschnitt:     Aufbewahrung
+Art 155     Grundsatz
+Die im Informationssystem des BAZG enthaltenen besonders schützenswerten Personendaten, besonders schützenswerten Daten von juristischen Personen, Daten, die auf einer Risikoanalyse beruhen, und Daten, die auf einem Profiling oder einem Profiling mit hohem Risiko beruhen, dürfen so lange aufbewahrt werden, wie es der Bearbeitungszweck erfordert, längstens aber bis zum Ablauf der Dauer nach den Artikeln 156−167.
+
+Art 160     Datenkategorie Vollzug von Strafen und Massnahmen
+Das BAZG darf besonders schützenswerte Personendaten und besonders schützenswerte Daten von juristischen Personen der Datenkategorie Vollzug von Strafen und Massnahmen nach Verfahrensabschluss höchstens 5 Jahre aufbewahren.
+
+Art 168     Nicht besonders schützenswerte Personendaten und nicht besonders schützenswerte Daten von juristischen Personen
+Der Bundesrat regelt die Aufbewahrungsdauer für die nicht besonders schützenswerten Personendaten und die nicht besonders schützenswerten Daten von juristischen Personen.
+</BEISPIEL>
+
+
+<ARCHIVIERUNG_UND_VERNICHTUNG>
+
+<BEISPIEL>
+2. Abschnitt:     Archivierung und Vernichtung
+Art. 169
+1 Die Archivierung von im Informationssystem des BAZG enthaltenen Daten richtet sich nach dem Archivierungsgesetz vom 26. Juni 1998.
+2 Personendaten, die das Bundesarchiv archiviert, sind vom BAZG zu vernichten. Bewertet das Bundesarchiv die angebotenen Daten als nicht archivwürdig, so ist Artikel 38 Absatz 2 des Datenschutzgesetzes vom 25. September 2020 (DSG) anwendbar.
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+<BEISPIEL>
+
+</BEISPIEL>
+
+
+
+"""
+	    prompt = prompt+"\n"+prompt_template 
             json_data = {
                 'model': 'llama3.3-70b',
                 'stream': False,
