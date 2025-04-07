@@ -134,8 +134,12 @@ def render_question(question, item=None):
             with st.form(key=f"add_item_form_{question_id}"):
                 new_item = st.text_input(
                     "Neuen Eintrag hinzufügen:",
+                   
                     key=f"input_{question_id}",
                     value=default_value,
+                    max_chars=question.get(
+                        "max_length", 500
+                    ),  # Add max_chars constraint
                 )
                 submitted = st.form_submit_button(get_text("add_button", language))
                 if submitted and new_item.strip():
@@ -173,6 +177,9 @@ def render_question(question, item=None):
                     key=f"input_{question_id}",
                     height=150,
                     label_visibility="collapsed",
+                    max_chars=question.get(
+                        "max_length", 500
+                    ),  # Add max_chars constraint
                 )
             else:
                 user_input = st.text_input(
@@ -180,6 +187,9 @@ def render_question(question, item=None):
                     value=default_value,
                     key=f"input_{question_id}",
                     label_visibility="collapsed",
+                    max_chars=question.get(
+                        "max_length", 500
+                    ),  # Add max_chars constraint
                 )
 
             if user_input:
@@ -231,8 +241,8 @@ def render_question(question, item=None):
             label_visibility="collapsed",
         )
 
-        if selected or not question.get("required", False):
-            st.session_state.answers[question_id] = selected
+        # Always update the answer state for multiselect to fix the selection issue
+        st.session_state.answers[question_id] = selected
 
     elif question["type"] == "number":
         default_value = st.session_state.answers.get(question_id, 0)
@@ -247,6 +257,24 @@ def render_question(question, item=None):
 
         st.session_state.answers[question_id] = user_input
 
+    elif question["type"] == "toggle":
+        # Add handling for toggle type (yes/no)
+        default_value = question.get("default", False)
+        if question_id in st.session_state.answers:
+            default_value = st.session_state.answers[question_id]
+
+        selected = st.radio(
+            get_text("select_one", language),
+            ["Ja", "Nein"],
+            index=0 if default_value else 1,
+            key=f"toggle_{question_id}",
+            label_visibility="collapsed",
+        )
+
+        # Convert "Ja"/"Nein" to True/False
+        selected_value = selected == "Ja"
+        st.session_state.answers[question_id] = selected_value
+
     # Return if the question has been answered and meets requirements
     is_answered = question_id in st.session_state.answers
 
@@ -259,6 +287,9 @@ def render_question(question, item=None):
             is_answered = bool(answer)
             if question.get("store_as_list", False):
                 is_answered = len(answer) > 0
+        elif question["type"] == "toggle":
+            # Toggle questions are always answered once rendered
+            is_answered = True
 
     return is_answered
 
@@ -408,32 +439,39 @@ def render_processor_matrix_question(question):
                                 if checked:
                                     has_any_checked = True
 
-            # Add quick selection buttons for convenience
-            st.markdown(f"#### {get_text('quick_selection', language)}")
+            # Add quick selection buttons only if not hidden
+            if not question.get("hide_quick_selection", False):
+                st.markdown(f"#### {get_text('quick_selection', language)}")
 
-            # Create select all/none buttons for each purpose
-            purpose_cols = st.columns(len(purposes))
-            for j, purpose in enumerate(purposes):
-                with purpose_cols[j]:
-                    if st.button(
-                        get_formatted_text("select_all_for", language, purpose=purpose),
-                        key=f"select_all_{processor}_{purpose}",
-                    ):
-                        for data_type in data_types:
-                            question_id = f"matrix_{processor}_{purpose}_{data_type}"
-                            st.session_state.answers[question_id] = True
-                        st.rerun()
+                # Create select all/none buttons for each purpose
+                purpose_cols = st.columns(len(purposes))
+                for j, purpose in enumerate(purposes):
+                    with purpose_cols[j]:
+                        if st.button(
+                            get_formatted_text(
+                                "select_all_for", language, purpose=purpose
+                            ),
+                            key=f"select_all_{processor}_{purpose}",
+                        ):
+                            for data_type in data_types:
+                                question_id = (
+                                    f"matrix_{processor}_{purpose}_{data_type}"
+                                )
+                                st.session_state.answers[question_id] = True
+                            st.rerun()
 
-                    if st.button(
-                        get_formatted_text(
-                            "select_none_for", language, purpose=purpose
-                        ),
-                        key=f"select_none_{processor}_{purpose}",
-                    ):
-                        for data_type in data_types:
-                            question_id = f"matrix_{processor}_{purpose}_{data_type}"
-                            st.session_state.answers[question_id] = False
-                        st.rerun()
+                        if st.button(
+                            get_formatted_text(
+                                "select_none_for", language, purpose=purpose
+                            ),
+                            key=f"select_none_{processor}_{purpose}",
+                        ):
+                            for data_type in data_types:
+                                question_id = (
+                                    f"matrix_{processor}_{purpose}_{data_type}"
+                                )
+                                st.session_state.answers[question_id] = False
+                            st.rerun()
 
             # Show current selections
             st.markdown(f"#### {get_text('current_selection', language)}")

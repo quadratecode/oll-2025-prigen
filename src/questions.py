@@ -9,6 +9,7 @@ SINGLE_CHOICE = "single_choice"
 MULTIPLE_CHOICE = "multiple_choice"
 NUMBER = "number"
 SPECIAL = "special"  # For questions that need special handling
+TOGGLE = "toggle"  # For yes/no questions
 
 # Define sensitive data categories for question 5.1
 SENSITIVE_DATA_CATEGORIES = [
@@ -132,6 +133,7 @@ questions = [
         # Denkfehler hier : der User kann mehrere Systeme pro Eintrag eingeben.
         # old        "help": "Geben Sie die Namen der eingesetzten Systeme ein, durch Kommas getrennt.",
         "help": "Geben Sie die Namen der eingesetzten Systeme ein. Bitte auf Hinzufügen clicken, damit die Liste aktualisiert wird.",
+        "max_length": 500,
     },
     # Question 1.1-1.2: Details for each system
     {
@@ -146,6 +148,7 @@ questions = [
                 "default": SYSTEM_ZIELE_DEFAULT,
                 "required": True,
                 "multiline": True,
+                "max_length": 500,
             },
             {
                 "id": "system_responsible_{item}",
@@ -155,19 +158,34 @@ questions = [
                 "required": True,
                 "store_as_list": True,
                 "help": "Geben Sie die Namen der Verantwortlichen ein.",
+                "max_length": 500,
             },
         ],
     },
-    # Question 2: Additional responsible parties
+    # Question 2: Are there additional responsible parties? (Toggle question)
+    {
+        "id": "has_additional_responsible",
+        "type": TOGGLE,
+        "text": "Gibt es Verantwortliche, die nicht Systembetreiber sind?",
+        "required": True,
+        "default": False,
+    },
+    # Question 2.1: Additional responsible parties (only shown if toggle is "Ja")
     {
         "id": "additional_responsible",
         "type": TEXT,
-        "text": "Gibt es Verantwortliche, die nicht Systembetreiber sind?",
+        "text": "Namen der zusätzlichen Verantwortlichen:",
         "default": VERANTWORTLICH_DEFAULT,
         "default": VERANTWORTLICH_DEFAULT,
-        "required": False,
+        "required": True,
         "store_as_list": True,
-        "help": "Geben Sie die Namen weiterer Verantwortlicher ein oder lassen Sie das Feld leer.",
+        "help": "Geben Sie die Namen weiterer Verantwortlicher ein.",
+        "max_length": 500,
+        "condition": {
+            "question_id": "has_additional_responsible",
+            "operator": "==",
+            "value": True,
+        },
     },
     # Question 3: Processors for each responsible party (special handling)
     {
@@ -186,6 +204,7 @@ questions = [
         "required": True,
         "store_as_list": True,
         "help": "Geben Sie die möglichen Bearbeitungszwecke ein getrennt.",
+        "max_length": 500,
     },
     # Question 5: Data types
     {
@@ -196,6 +215,7 @@ questions = [
         "required": True,
         "store_as_list": True,
         "help": "Geben Sie die Datenarten ein",
+        "max_length": 500,
     },
     # Question 5.1: Categories for each data type
     {
@@ -220,6 +240,7 @@ questions = [
         "text": "Je Bearbeiter: Zu welchem Zweck bearbeitet dieser Bearbeiter welche Datenarten?",
         "special_type": "processor_matrix",
         "help": "Bitte geben Sie für jeden Bearbeiter an, zu welchem Zweck er welche Datenarten bearbeitet.",
+        "hide_quick_selection": True,  # Flag to hide quick selection
     },
 ]
 
@@ -268,9 +289,11 @@ def collect_all_responsible_parties(answers):
         if key.startswith("system_responsible_") and isinstance(value, list):
             all_responsible.extend(value)
 
-    # Add from additional_responsible
-    if "additional_responsible" in answers and isinstance(
-        answers["additional_responsible"], list
+    # Add from additional_responsible only if has_additional_responsible is True
+    if (
+        answers.get("has_additional_responsible", False)
+        and "additional_responsible" in answers
+        and isinstance(answers["additional_responsible"], list)
     ):
         all_responsible.extend(answers["additional_responsible"])
 
