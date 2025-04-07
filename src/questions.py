@@ -20,7 +20,9 @@ SENSITIVE_DATA_CATEGORIES = [
     "Daten über verwaltungs- und strafrechtliche Verfolgungen oder Sanktionen (natürliche Personen)",
     "Daten über Massnahmen der sozialen Hilfe (natürliche Personen)",
     "Daten über verwaltungs- und strafrechtliche Verfolgungen und Sanktionen (juristische Personen)",
-    "Daten über Berufs-, Geschäfts- und Fabrikationsgeheimnisse (juristische Personen)",
+    "Daten über Berufs-, Geschäfts- und Fabrikationsgeheimnisse (juristische Personen)"
+    "Keine besonders schützenswerten Personendaten (natürliche Personen)",
+    "Keine besonders schützenswerten Personendaten (juristische Personen)",
 ]
 
 SYSTEM_DEFAULT = [
