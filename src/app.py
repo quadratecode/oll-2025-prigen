@@ -111,10 +111,10 @@ def render_question(question, item=None):
 
     # Show help text if available
     if "help" in question:
-        st.markdown(f"**Frage {question_id} : {question_text}**")
+        st.markdown(f"**Frage : {question_text}**")
         st.caption(question["help"])
     else:
-        st.markdown(f"**Frage {question_id} : {question_text}**")
+        st.markdown(f"**Frage : {question_text}**")
 
     if question["type"] == "text":
         # For lists, use a more interactive approach instead of comma-separated values
