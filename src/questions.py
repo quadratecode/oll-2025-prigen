@@ -128,14 +128,10 @@ questions = [
         "text": "Welche Systeme werden eingesetzt?",
         "required": True,
         "store_as_list": True,
-<<<<<<< HEAD
-        "help": "Geben Sie die Namen der eingesetzten Systeme ein.",
-=======
         "default": SYSTEM_DEFAULT,
         # Denkfehler hier : der User kann mehrere Systeme pro Eintrag eingeben.
         # old        "help": "Geben Sie die Namen der eingesetzten Systeme ein, durch Kommas getrennt.",
         "help": "Geben Sie die Namen der eingesetzten Systeme ein. Bitte auf Hinzufügen clicken, damit die Liste aktualisiert wird.",
->>>>>>> 593eba2 (>feat : add default and did a test run)
     },
     # Question 1.1-1.2: Details for each system
     {
