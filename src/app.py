@@ -13,6 +13,7 @@ import os
 import json
 from datetime import datetime
 from random import randint
+import requests
 
 from questions import (
     questions,
@@ -123,7 +124,7 @@ def render_question(question, item=None):
                 st.session_state.answers[question_id] = []
 
             maybe_default = question.get("default", [""])
-            if len(maybe_default) > 1:
+            if len(maybe_default) > 1 :
             #     default_value = maybe_default[randint(0, len(maybe_default) - 1)]
             # elif len(maybe_default) == 1:
                 default_value = maybe_default[0]
@@ -134,7 +135,7 @@ def render_question(question, item=None):
             with st.form(key=f"add_item_form_{question_id}"):
                 new_item = st.text_input(
                     "Neuen Eintrag hinzufügen:",
-                   
+
                     key=f"input_{question_id}",
                     value=default_value,
                     max_chars=question.get(
@@ -163,9 +164,9 @@ def render_question(question, item=None):
         else:
             # Regular text input for non-list fields
             maybe_default = question.get("default", [""])
-            if len(maybe_default) > 1:
+            if len(maybe_default) > 1 and not st.session_state.answers.get(question_id, ""):
                 default_value = maybe_default[randint(0, len(maybe_default) - 1)]
-            elif len(maybe_default) == 1:
+            elif len(maybe_default) == 1 and not st.session_state.answers.get(question_id, ""):
                 default_value = maybe_default[0]
             else:
                 default_value = st.session_state.answers.get(question_id, "")
@@ -238,7 +239,7 @@ def render_question(question, item=None):
             options,
             default=default,
             key=f"multiselect_{question_id}",
-            label_visibility="collapsed",
+            # label_visibility="collapsed",
         )
 
         # Always update the answer state for multiselect to fix the selection issue
@@ -706,7 +707,71 @@ def render_summary(answers):
                 item["Question"] = item.pop("Frage")
                 item["Answer"] = item.pop("Antwort")
 
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + open(".env").read().rstrip().split("=")[1],
+        }
+
+
         df = pd.DataFrame(summary_data)
+
+        prompt = """
+
+        Du bist ein Experte für schweizerische Gesetzgebung mit Schwerpunkt Datenschutzrecht. Auf Grundlage der nachfolgenden strukturierten Übersicht sollst du einen kohärenten Gesetzestext in Fließtextform formulieren – orientiert an der sprachlichen und formalen Gestaltung des Schweizer Datenschutzgesetzes (DSG).
+
+        **Anforderungen an die Ausgabe:**
+
+        - Der Gesetzestext soll vollständig als zusammenhängender Fließtext erscheinen – **ohne Bulletpoints, Nummerierungen, Listen oder Tabellen**.
+        - Orientiere dich am **juristischen Stil** der schweizerischen Gesetzgebung: sachlich, klar, geschlechtsneutral, präzise.
+        - Nutze die nachstehende **strukturierte Gesetzesgliederung** als inhaltliche Orientierung. Die Titel sollen sinngemäß in den Text eingebaut werden – entweder als Überschriften oder eingebettet im Fließtext.
+        - Die Begriffe und Inhalte sollen wie bei echten Gesetzestexten in **Artikelstruktur** gegossen sein. Die Abschnitte innerhalb eines Kapitels (z. B. 3.1 und 3.2) dürfen als getrennte Artikel formuliert werden.
+        - Kein erklärender Text, keine Kommentare – nur der eigentliche Gesetzestext.
+
+        **Struktur für die Gesetzgebung (als Fließtext umzusetzen):**
+
+        | **Kapitel** | **Bezeichnung**                         |
+        | ----------- | --------------------------------------- |
+        | 1           | Begriffe, Grundsätze, Systeme           |
+        | 2           | Datenkatalog                            |
+        | 3           | Datenbearbeitungen, Profiling           |
+        | 3.1         | Abschnitt: Datenbearbeitung             |
+        | 3.2         | Abschnitt: Profiling                    |
+        | 4           | Zugriffsrechte                          |
+        | 5           | Datenbekanntgaben                       |
+        | 6           | Einschränkungen von Betroffenenrechten  |
+        | 7           | Aufbewahrung, Archivierung, Vernichtung |
+        | 7.1         | Abschnitt: Aufbewahrung                 |
+        | 7.2         | Abschnitt: Archivierung und Vernichtung |
+
+        Ergänze diesen Text so, dass er einer vollständigen Regelung für Organisationen in der Schweiz entspricht – in Anlehnung an das Bundesgesetz über den Datenschutz (DSG) und unter Beachtung der föderalen Rahmenbedingungen. Bitte verwende dafür den folgenden Datensatz:
+
+        ```
+        {}
+        ```
+
+        Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte aufpassen, dass Headers in der richtige Reihenfolge formatiert werden, und bitte pass auf die differenzierung zwischen kapitel und artikel mit indent.
+        """
+
+        json_data = {
+            'model': 'llama3.1-8b',
+            'stream': False,
+            'messages': [
+                {
+                    'content': prompt.format(df.to_markdown()),
+                    'role': 'user',
+                },
+            ],
+            'temperature': 0,
+            'max_completion_tokens': -1,
+            'seed': 0,
+            'top_p': 1,
+        }
+
+        response = requests.post('https://api.cerebras.ai/v1/chat/completions', headers=headers, json=json_data)
+        st.markdown(
+        json.loads(response.text)["choices"][0]["message"]["content"]
+        )
+
         st.dataframe(df, use_container_width=True)
     else:
         st.info(get_text("no_answers", language))
