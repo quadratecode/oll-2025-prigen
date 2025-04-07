@@ -123,13 +123,14 @@ def render_question(question, item=None):
             if question_id not in st.session_state.answers:
                 st.session_state.answers[question_id] = []
 
-            maybe_default = question.get("default", [""])
-            if len(maybe_default) > 1 :
-            #     default_value = maybe_default[randint(0, len(maybe_default) - 1)]
-            # elif len(maybe_default) == 1:
-                default_value = maybe_default[0]
-            else:
-                default_value = st.session_state.answers.get(question_id, "")
+            # maybe_default = question.get("default", [""])
+            # if len(maybe_default) > 1 :
+            # #     default_value = maybe_default[randint(0, len(maybe_default) - 1)]
+            # # elif len(maybe_default) == 1:
+            #     default_value = maybe_default[0]
+            # else:
+            #     default_value = st.session_state.answers.get(question_id, "")
+            default_value = st.session_state.answers.get(question_id, "")
 
             # Create a form for adding new items to avoid widget key conflicts
             with st.form(key=f"add_item_form_{question_id}"):
@@ -163,13 +164,14 @@ def render_question(question, item=None):
                             st.rerun()
         else:
             # Regular text input for non-list fields
-            maybe_default = question.get("default", [""])
-            if len(maybe_default) > 1 and not st.session_state.answers.get(question_id, ""):
-                default_value = maybe_default[randint(0, len(maybe_default) - 1)]
-            elif len(maybe_default) == 1 and not st.session_state.answers.get(question_id, ""):
-                default_value = maybe_default[0]
-            else:
-                default_value = st.session_state.answers.get(question_id, "")
+            # maybe_default = question.get("default", [""])
+            # if len(maybe_default) > 1 and not st.session_state.answers.get(question_id, ""):
+            #     default_value = maybe_default[randint(0, len(maybe_default) - 1)]
+            # elif len(maybe_default) == 1 and not st.session_state.answers.get(question_id, ""):
+            #     default_value = maybe_default[0]
+            # else:
+            #     default_value = st.session_state.answers.get(question_id, "")
+            default_value = st.session_state.answers.get(question_id, "")
 
             if question.get("multiline", False):
                 user_input = st.text_area(
