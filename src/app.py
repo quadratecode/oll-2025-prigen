@@ -133,13 +133,9 @@ def render_question(question, item=None):
             # Create a form for adding new items to avoid widget key conflicts
             with st.form(key=f"add_item_form_{question_id}"):
                 new_item = st.text_input(
-<<<<<<< HEAD
-                    get_text("add_new_item", language), key=f"input_{question_id}"
-=======
                     "Neuen Eintrag hinzufügen:",
                     key=f"input_{question_id}",
                     value=default_value,
->>>>>>> 593eba2 (>feat : add default and did a test run)
                 )
                 submitted = st.form_submit_button(get_text("add_button", language))
                 if submitted and new_item.strip():
@@ -485,10 +481,7 @@ def render_repeated_section(section, answers):
     all_answered = True
 
     for item in items:
-<<<<<<< HEAD
         st.markdown(get_formatted_text("details_for", language, item=item))
-=======
->>>>>>> 593eba2 (>feat : add default and did a test run)
         item = item.strip('"').strip("[").strip("]")
         st.markdown(f"### Details for: **{item}**")
         st.markdown("---")
