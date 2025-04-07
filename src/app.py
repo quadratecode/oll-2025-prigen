@@ -710,7 +710,7 @@ def render_summary(answers):
                 item["Answer"] = item.pop("Antwort")
 
 
-        llm=False
+        llm=True
         df = pd.DataFrame(summary_data)
 
         if llm:

@@ -1,11 +1,20 @@
-FROM python:3.9-slim
+FROM python:3.10-slim-bullseye
 
-WORKDIR /app
+# The installer requires curl (and certificates) to download the release archive
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+# Ensure the installed binary is on the `PATH`
+ENV PATH="/root/.local/bin/:$PATH"
 
 COPY . .
 
-RUN pip install uv
-RUN uv pip install -r requirements.txt
+RUN uv venv
+RUN uv pip install -r pyproject.toml
 
 EXPOSE 8501
 
