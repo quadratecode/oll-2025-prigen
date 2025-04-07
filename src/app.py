@@ -707,72 +707,75 @@ def render_summary(answers):
                 item["Question"] = item.pop("Frage")
                 item["Answer"] = item.pop("Antwort")
 
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + open(".env").read().rstrip().split("=")[1],
-        }
 
-
+        llm=False
         df = pd.DataFrame(summary_data)
 
-        prompt = """
+        if llm:
 
-        Du bist ein Experte für schweizerische Gesetzgebung mit Schwerpunkt Datenschutzrecht. Auf Grundlage der nachfolgenden strukturierten Übersicht sollst du einen kohärenten Gesetzestext in Fließtextform formulieren – orientiert an der sprachlichen und formalen Gestaltung des Schweizer Datenschutzgesetzes (DSG).
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + open(".env").read().rstrip().split("=")[1],
+            }
 
-        **Anforderungen an die Ausgabe:**
+            prompt = """
 
-        - Der Gesetzestext soll vollständig als zusammenhängender Fließtext erscheinen – **ohne Bulletpoints, Nummerierungen, Listen oder Tabellen**.
-        - Orientiere dich am **juristischen Stil** der schweizerischen Gesetzgebung: sachlich, klar, geschlechtsneutral, präzise.
-        - Nutze die nachstehende **strukturierte Gesetzesgliederung** als inhaltliche Orientierung. Die Titel sollen sinngemäß in den Text eingebaut werden – entweder als Überschriften oder eingebettet im Fließtext.
-        - Die Begriffe und Inhalte sollen wie bei echten Gesetzestexten in **Artikelstruktur** gegossen sein. Die Abschnitte innerhalb eines Kapitels (z. B. 3.1 und 3.2) dürfen als getrennte Artikel formuliert werden.
-        - Kein erklärender Text, keine Kommentare – nur der eigentliche Gesetzestext.
+            Du bist ein Experte für schweizerische Gesetzgebung mit Schwerpunkt Datenschutzrecht. Auf Grundlage der nachfolgenden strukturierten Übersicht sollst du einen kohärenten Gesetzestext in Fließtextform formulieren – orientiert an der sprachlichen und formalen Gestaltung des Schweizer Datenschutzgesetzes (DSG).
 
-        **Struktur für die Gesetzgebung (als Fließtext umzusetzen):**
+            **Anforderungen an die Ausgabe:**
 
-        | **Kapitel** | **Bezeichnung**                         |
-        | ----------- | --------------------------------------- |
-        | 1           | Begriffe, Grundsätze, Systeme           |
-        | 2           | Datenkatalog                            |
-        | 3           | Datenbearbeitungen, Profiling           |
-        | 3.1         | Abschnitt: Datenbearbeitung             |
-        | 3.2         | Abschnitt: Profiling                    |
-        | 4           | Zugriffsrechte                          |
-        | 5           | Datenbekanntgaben                       |
-        | 6           | Einschränkungen von Betroffenenrechten  |
-        | 7           | Aufbewahrung, Archivierung, Vernichtung |
-        | 7.1         | Abschnitt: Aufbewahrung                 |
-        | 7.2         | Abschnitt: Archivierung und Vernichtung |
+            - Der Gesetzestext soll vollständig als zusammenhängender Fließtext erscheinen – **ohne Bulletpoints, Nummerierungen, Listen oder Tabellen**.
+            - Orientiere dich am **juristischen Stil** der schweizerischen Gesetzgebung: sachlich, klar, geschlechtsneutral, präzise.
+            - Nutze die nachstehende **strukturierte Gesetzesgliederung** als inhaltliche Orientierung. Die Titel sollen sinngemäß in den Text eingebaut werden – entweder als Überschriften oder eingebettet im Fließtext.
+            - Die Begriffe und Inhalte sollen wie bei echten Gesetzestexten in **Artikelstruktur** gegossen sein. Die Abschnitte innerhalb eines Kapitels (z. B. 3.1 und 3.2) dürfen als getrennte Artikel formuliert werden.
+            - Kein erklärender Text, keine Kommentare – nur der eigentliche Gesetzestext.
 
-        Ergänze diesen Text so, dass er einer vollständigen Regelung für Organisationen in der Schweiz entspricht – in Anlehnung an das Bundesgesetz über den Datenschutz (DSG) und unter Beachtung der föderalen Rahmenbedingungen. Bitte verwende dafür den folgenden Datensatz:
+            **Struktur für die Gesetzgebung (als Fließtext umzusetzen):**
 
-        ```
-        {}
-        ```
+            | **Kapitel** | **Bezeichnung**                         |
+            | ----------- | --------------------------------------- |
+            | 1           | Begriffe, Grundsätze, Systeme           |
+            | 2           | Datenkatalog                            |
+            | 3           | Datenbearbeitungen, Profiling           |
+            | 3.1         | Abschnitt: Datenbearbeitung             |
+            | 3.2         | Abschnitt: Profiling                    |
+            | 4           | Zugriffsrechte                          |
+            | 5           | Datenbekanntgaben                       |
+            | 6           | Einschränkungen von Betroffenenrechten  |
+            | 7           | Aufbewahrung, Archivierung, Vernichtung |
+            | 7.1         | Abschnitt: Aufbewahrung                 |
+            | 7.2         | Abschnitt: Archivierung und Vernichtung |
 
-        Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte aufpassen, dass Headers in der richtige Reihenfolge formatiert werden, und bitte pass auf die differenzierung zwischen kapitel und artikel mit indent.
-        """
+            Ergänze diesen Text so, dass er einer vollständigen Regelung für Organisationen in der Schweiz entspricht – in Anlehnung an das Bundesgesetz über den Datenschutz (DSG) und unter Beachtung der föderalen Rahmenbedingungen. Bitte verwende dafür den folgenden Datensatz:
 
-        json_data = {
-            'model': 'llama3.1-8b',
-            'stream': False,
-            'messages': [
-                {
-                    'content': prompt.format(df.to_markdown()),
-                    'role': 'user',
-                },
-            ],
-            'temperature': 0,
-            'max_completion_tokens': -1,
-            'seed': 0,
-            'top_p': 1,
-        }
+            ```
+            {}
+            ```
 
-        response = requests.post('https://api.cerebras.ai/v1/chat/completions', headers=headers, json=json_data)
-        st.markdown(
-        json.loads(response.text)["choices"][0]["message"]["content"]
-        )
+            Berücksichtige schweizerische Rechtsbegriffe, föderale Zuständigkeiten und formuliere geschlechtsneutral. Bitte aufpassen, dass Headers in der richtige Reihenfolge formatiert werden, und bitte pass auf die differenzierung zwischen kapitel und artikel mit indent.
+            """
 
-        st.dataframe(df, use_container_width=True)
+            json_data = {
+                'model': 'llama3.1-8b',
+                'stream': False,
+                'messages': [
+                    {
+                        'content': prompt.format(df.to_markdown()),
+                        'role': 'user',
+                    },
+                ],
+                'temperature': 0,
+                'max_completion_tokens': -1,
+                'seed': 0,
+                'top_p': 1,
+            }
+
+            response = requests.post('https://api.cerebras.ai/v1/chat/completions', headers=headers, json=json_data)
+            st.markdown(
+            json.loads(response.text)["choices"][0]["message"]["content"]
+            )
+        else:
+            st.dataframe(df, use_container_width=True)
     else:
         st.info(get_text("no_answers", language))
 
